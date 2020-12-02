@@ -3,7 +3,7 @@ from itertools import combinations
 
 
 def get_input_data():
-    with open("input.txt") as input_file:
+    with open("01-12-2020/input.txt") as input_file:
         input_data = input_file.read().splitlines()
     return [int(value) for value in input_data]
 
