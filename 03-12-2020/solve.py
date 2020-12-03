@@ -1,4 +1,5 @@
 import numpy as np
+from functools import reduce
 
 
 def get_raw_input_data():
@@ -67,6 +68,8 @@ def main():
     raw_input_data = get_raw_input_data()
     matrix = get_matrix(raw_input_data)
 
+    # part 1
+
     angle = (3, 1)
     start_position = (0, 0)
 
@@ -75,7 +78,20 @@ def main():
 
     enountered_trees_on_path = sum(place == "#" for place in path)
 
-    print(f"We encountered {enountered_trees_on_path} trees")
+    print(f"Part 1: we encountered {enountered_trees_on_path} trees")
+
+    # part 2
+
+    start_position = (0, 0)
+    angles = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+
+    encountered_trees_for_angle = {}
+    for angle in angles:
+        path = environment.get_path(start_position=start_position, angle=angle)
+        encountered_trees_for_angle[angle] = sum(place == "#" for place in path)
+
+    result_part_2 = reduce(lambda x, y: x * y, encountered_trees_for_angle.values())
+    print(f"Part 2: result is {result_part_2}")
 
 
 if __name__ == "__main__":
