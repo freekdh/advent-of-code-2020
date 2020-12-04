@@ -32,7 +32,7 @@ class distance:
 
 
 @dataclass(frozen=True)
-class Passport:
+class RawDataPassport:
     birth_year: int = None
     issue_year: int = None
     expiration_year: int = None
@@ -42,7 +42,7 @@ class Passport:
     passport_id: int = None
     country_id: int = None
 
-    def is_valid(self):
+    def required_fields_are_present(self):
         return None not in (
             self.birth_year,
             self.issue_year,
@@ -95,12 +95,15 @@ def parse_data(passport_data):
 def main():
     input_data = get_input_data()
 
+    # Part 1
     passports = []
     for passport_data in input_data:
         passport_fields = parse_data(passport_data)
-        passports.append(Passport(**passport_fields))
+        passports.append(RawDataPassport(**passport_fields))
 
-    valid_passports = sum(passport.is_valid() for passport in passports)
+    valid_passports = sum(
+        passport.required_fields_are_present() for passport in passports
+    )
 
     print(
         f"Part1: there are {valid_passports} valid passports out of {len(passports)} passports"
