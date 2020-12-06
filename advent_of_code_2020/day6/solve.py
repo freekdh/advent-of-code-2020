@@ -19,7 +19,19 @@ def main():
         for group in raw_input_data
     )
 
-    print(f"Part1: sum of counts for groups answered yes to questions: {result_part_1}")
+    print(
+        f"Part1: sum of counts for groups answered yes to any questions: {result_part_1}"
+    )
+
+    # part 1
+    result_part_2 = sum(
+        len(list(set.intersection(*(set(list(member)) for member in group))))
+        for group in raw_input_data
+    )
+
+    print(
+        f"Part2: sum of counts for groups answered yes to every questions: {result_part_2}"
+    )
 
 
 if __name__ == "__main__":
