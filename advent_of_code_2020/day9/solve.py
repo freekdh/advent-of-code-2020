@@ -37,6 +37,25 @@ def main():
         f"{result_part1} is the first number that is not the sum of two of the {preamble} preamble numbers before"
     )
 
+    for windows_size in range(2, len(input_data)):
+        try:
+            window_part2 = next(
+                window
+                for window in get_window_iterator(
+                    list_of_data=input_data, window_size=windows_size
+                )
+                if sum(window) == result_part1
+            )
+            break
+        except StopIteration:
+            pass
+
+    print(
+        f"{min(window_part2) + max(window_part2)} is the sum of the smallest and largest number in the continguous range"
+    )
+
+    # TODO: should be able to do this more efficiently using previous evaluations
+
 
 if __name__ == "__main__":
     main()
