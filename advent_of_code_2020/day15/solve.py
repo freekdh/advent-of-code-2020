@@ -22,7 +22,7 @@ class Game:
         return len(self._sequence)
 
     def _play_until(self, until_turn):
-        while self._get_last_turn() <= until_turn:
+        while self._get_last_turn() < until_turn:
             if self._first_time_spoken(self._sequence[-1]):
                 self._add_number(0)
             else:
@@ -54,6 +54,11 @@ def main():
     number_spoken_turn_2020 = game.get_number_spoken(turn=2020)
 
     print(f"Part1: {number_spoken_turn_2020} is the number spoken at turn 2020")
+
+    game = Game(puzzle_input)
+    number_spoken_turn_30000000 = game.get_number_spoken(turn=30000000)
+
+    print(f"Part2: {number_spoken_turn_30000000} is the number spoken at turn 30000000")
 
 
 if __name__ == "__main__":
