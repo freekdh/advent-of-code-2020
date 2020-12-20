@@ -19,7 +19,7 @@ def test():
 def test_part2():
     input_data = get_input_data("tests/day14/input_part2.txt")
     commands = parse(input_data)
-    computer = ComputerPart2(bitmask=commands[0].mask)
+    computer = ComputerPart2()
 
     computer = ComputerPart2()
     for command in commands:

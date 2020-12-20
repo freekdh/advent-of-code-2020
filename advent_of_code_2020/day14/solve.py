@@ -27,7 +27,7 @@ def parse(input_data):
     return commands
 
 
-@dataclass
+@dataclass(frozen=True)
 class Mask:
     mask: str
 
@@ -38,7 +38,7 @@ class Mask:
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class AssignmentOperation:
     memory_address: int
     value: int
@@ -128,13 +128,13 @@ def main():
         f"Part1, {result_part1} is the sum of all values left in memory after it completes"
     )
 
-    computer = ComputerPart2()
+    computer2 = ComputerPart2(memory={})
     for command in commands:
-        computer.execute_command(command)
+        computer2.execute_command(command)
 
     result_part2 = sum(
-        computer.get_value(memory_address)
-        for memory_address in computer.get_written_memory_addresses()
+        computer2.get_value(memory_address)
+        for memory_address in computer2.get_written_memory_addresses()
     )
 
     print(
