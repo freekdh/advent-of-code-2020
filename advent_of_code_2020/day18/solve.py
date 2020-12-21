@@ -16,7 +16,7 @@ class EquationEvaluator:
             bracket_levels.items(), key=lambda item: item[1], reverse=True
         ):
             for bracket in brackets:
-                evaluated_bracket = self._evaluate_left_to_right(
+                evaluated_bracket = self._evaluate_without_brackets(
                     equation[bracket[0] + 1 : bracket[1]]
                 )
                 equation = (
@@ -24,7 +24,7 @@ class EquationEvaluator:
                     + str(evaluated_bracket).rjust(bracket[1] - bracket[0] + 1, " ")
                     + equation[bracket[1] + 1 :]
                 )
-        return self._evaluate_left_to_right(equation)
+        return self._evaluate_without_brackets(equation)
 
     def _get_bracket_levels(self, equation):
         current_opening_brackets = []
@@ -39,7 +39,7 @@ class EquationEvaluator:
                 bracket_levels[level].append((start_index, end_index))
         return bracket_levels
 
-    def _evaluate_left_to_right(self, equation):
+    def _evaluate_without_brackets(self, equation):
         equation = equation.replace(" ", "")
         start_digit = int(re.search(r"(\d+)", equation).group())
         operations = re.findall(r"([\*\+])(\d+)", equation)
@@ -49,6 +49,43 @@ class EquationEvaluator:
             elif operation[0] == "*":
                 start_digit *= int(operation[1])
         return start_digit
+
+
+class AdvancedEquationEvaluator(EquationEvaluator):
+    def _evaluate_without_brackets(self, equation):
+        equation = equation.replace(" ", "")
+        equation = self._evaluate_additions(equation)
+        return self._evaluate_multiplications(equation)
+
+    def _evaluate_additions(self, equation: str):
+        while True:
+            equation = equation.replace(" ", "")
+            search = re.search(r"(\d+)\+(\d+)", equation)
+            if search:
+                span = search.span()
+                left_, right_ = search.groups()
+                equation = (
+                    equation[: span[0]]
+                    + str(int(left_) + int(right_)).rjust(span[1] - span[0], " ")
+                    + equation[span[1] :]
+                )
+            else:
+                return equation
+
+    def _evaluate_multiplications(self, equation):
+        while True:
+            equation = equation.replace(" ", "")
+            search = re.search(r"(\d+)\*(\d+)", equation)
+            if search:
+                span = search.span()
+                left_, right_ = search.groups()
+                equation = (
+                    equation[: span[0]]
+                    + str(int(left_) * int(right_)).rjust(span[1] - span[0], " ")
+                    + equation[span[1] :]
+                )
+            else:
+                return int(equation)
 
 
 def main():
@@ -61,6 +98,16 @@ def main():
     )
 
     print(f"Part1: {sum_of_equations_homework} is the sum of the resulting values")
+
+    advanced_equation_evaluator = AdvancedEquationEvaluator()
+
+    sum_of_equations_homework_advanced = sum(
+        advanced_equation_evaluator.evaluate(equation) for equation in input_data
+    )
+
+    print(
+        f"Part2: {sum_of_equations_homework_advanced} is the sum of the resulting values"
+    )
 
 
 if __name__ == "__main__":
