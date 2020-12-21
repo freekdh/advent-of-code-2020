@@ -7,8 +7,9 @@ def get_input_data(path_to_input_data):
 
 
 class PocketDimension:
-    def __init__(self, initial_state):
-        self.lookup_table = dict()  # key: (x,y,z), value = 1
+    def __init__(self, initial_state, dimensionality=3):
+        self.dimensionality = dimensionality
+        self.lookup_table = dict()
 
         initial_state_x_len, initial_state_y_len = self._get_dimensions_state(
             initial_state
@@ -16,7 +17,10 @@ class PocketDimension:
 
         for x, y in product(range(initial_state_x_len), range(initial_state_y_len)):
             if initial_state[y][x] == "#":
-                self.lookup_table[(x, initial_state_y_len - 1 - y, 0)] = 1
+
+                self.lookup_table[
+                    (x, initial_state_y_len - 1 - y) + (0,) * (dimensionality - 2)
+                ] = 1
 
     def get_active_cells(self):
         return list(self.lookup_table.keys())
@@ -40,16 +44,22 @@ class PocketDimension:
         for location in swap_to_inactive:
             del self.lookup_table[location]
 
-    def get_z_slice(self, index, x_range, y_range):
-        z_slice = ""
+    def get_slice(
+        self,
+        x_range,
+        y_range,
+        other_dimensions,
+    ):
+        assert self.dimensionality - 2 == len(other_dimensions)
+        slice_ = ""
         for y in reversed(range(y_range[0], y_range[1] + 1)):
             for x in range(x_range[0], x_range[1] + 1):
-                if (x, y, index) in self.lookup_table:
-                    z_slice += "#"
+                if (x, y) + other_dimensions in self.lookup_table:
+                    slice_ += "#"
                 else:
-                    z_slice += "."
-            z_slice += "\n"
-        return z_slice
+                    slice_ += "."
+            slice_ += "\n"
+        return slice_
 
     def _get_dimensions_state(self, state):
         return (len(state[0]), len(state))
@@ -60,16 +70,20 @@ class PocketDimension:
     def _get_inactive_locations_to_be_checked(self):
         inactive_locations = set()
         for key in self.lookup_table:
-            for x, y, z in product(range(-1, 2), range(-1, 2), range(-1, 2)):
-                if (x, y, z) != (0, 0, 0):
-                    inactive_locations.add((key[0] + x, key[1] + y, key[2] + z))
+            for location in product(
+                *[range(-1, 2) for _ in range(self.dimensionality)]
+            ):
+                if location != ((0,) * self.dimensionality):
+                    inactive_locations.add(tuple(map(sum, zip(location, key))))
         return inactive_locations
 
     def _get_n_active_neighbours(self, location):
         return sum(
-            (location[0] + x, location[1] + y, location[2] + z) in self.lookup_table
-            for x, y, z in product(range(-1, 2), range(-1, 2), range(-1, 2))
-            if (x, y, z) != (0, 0, 0)
+            tuple(map(sum, zip(location, location_))) in self.lookup_table
+            for location_ in product(
+                *[range(-1, 2) for _ in range(self.dimensionality)]
+            )
+            if location_ != ((0,) * self.dimensionality)
         )
 
 
@@ -83,7 +97,17 @@ def main():
     n_active_cubes = len(pocket_dimension.get_active_cells())
 
     print(
-        f"Part1: {n_active_cubes} cubes are left in the active state after the sixth cycle"
+        f"Part1: {n_active_cubes} cubes are left in the active state after the sixth cycle in the 3D pocket dimension"
+    )
+
+    pocket_dimension4D = PocketDimension(input_data, dimensionality=4)
+    for cycle in range(6):
+        pocket_dimension4D.run_cycle()
+
+    n_active_cubes = len(pocket_dimension4D.get_active_cells())
+
+    print(
+        f"Part2: {n_active_cubes} cubes are left in the active state after the sixth cycle in the 4D pocket dimension"
     )
 
 

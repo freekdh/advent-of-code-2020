@@ -23,36 +23,48 @@ def test_run_cycle():
     pocket_dimension = PocketDimension(initial_state=input_data)
 
     assert (
-        pocket_dimension.get_z_slice(index=0, x_range=[0, 2], y_range=[0, 2])
+        pocket_dimension.get_slice(
+            other_dimensions=(0,), x_range=[0, 2], y_range=[0, 2]
+        )
         == ".#.\n..#\n###\n"
     )
 
     pocket_dimension.run_cycle()
 
     assert (
-        pocket_dimension.get_z_slice(index=-1, x_range=[0, 2], y_range=[-1, 1])
+        pocket_dimension.get_slice(
+            other_dimensions=(-1,), x_range=[0, 2], y_range=[-1, 1]
+        )
         == "#..\n..#\n.#.\n"
     )
 
     assert (
-        pocket_dimension.get_z_slice(index=0, x_range=[0, 2], y_range=[-1, 1])
+        pocket_dimension.get_slice(
+            other_dimensions=(0,), x_range=[0, 2], y_range=[-1, 1]
+        )
         == "#.#\n.##\n.#.\n"
     )
 
     assert (
-        pocket_dimension.get_z_slice(index=1, x_range=[0, 2], y_range=[-1, 1])
+        pocket_dimension.get_slice(
+            other_dimensions=(1,), x_range=[0, 2], y_range=[-1, 1]
+        )
         == "#..\n..#\n.#.\n"
     )
 
     pocket_dimension.run_cycle()
 
     assert (
-        pocket_dimension.get_z_slice(index=-2, x_range=[-1, 3], y_range=[-2, 2])
+        pocket_dimension.get_slice(
+            other_dimensions=(-2,), x_range=[-1, 3], y_range=[-2, 2]
+        )
         == ".....\n.....\n..#..\n.....\n.....\n"
     )
 
     assert (
-        pocket_dimension.get_z_slice(index=-1, x_range=[-1, 3], y_range=[-2, 2])
+        pocket_dimension.get_slice(
+            other_dimensions=(-1,), x_range=[-1, 3], y_range=[-2, 2]
+        )
         == "..#..\n.#..#\n....#\n.#...\n.....\n"
     )
 
@@ -66,3 +78,59 @@ def test_active_cubes():
         pocket_dimension.run_cycle()
 
     assert len(pocket_dimension.get_active_cells()) == 112
+
+
+def test_4d_cycles():
+    input_data = get_input_data("tests/day17/test_input.txt")
+
+    pocket_dimension = PocketDimension(initial_state=input_data, dimensionality=4)
+
+    pocket_dimension.run_cycle()
+
+    assert (
+        pocket_dimension.get_slice(
+            other_dimensions=(-1, -1), x_range=[0, 2], y_range=[-1, 1]
+        )
+        == "#..\n..#\n.#.\n"
+    )
+
+    assert (
+        pocket_dimension.get_slice(
+            other_dimensions=(0, -1), x_range=[0, 2], y_range=[-1, 1]
+        )
+        == "#..\n..#\n.#.\n"
+    )
+
+    pocket_dimension.run_cycle()
+
+    assert (
+        pocket_dimension.get_slice(
+            other_dimensions=(-2, -2), x_range=[-1, 3], y_range=[-2, 2]
+        )
+        == ".....\n.....\n..#..\n.....\n.....\n"
+    )
+
+    assert (
+        pocket_dimension.get_slice(
+            other_dimensions=(0, -2), x_range=[-1, 3], y_range=[-2, 2]
+        )
+        == "###..\n##.##\n#...#\n.#..#\n.###.\n"
+    )
+
+    assert (
+        pocket_dimension.get_slice(
+            other_dimensions=(-1, 0), x_range=[-1, 3], y_range=[-2, 2]
+        )
+        == ".....\n.....\n.....\n.....\n.....\n"
+    )
+
+
+def test_active_cubes_4d():
+    input_data = get_input_data("tests/day17/test_input.txt")
+
+    pocket_dimension = PocketDimension(initial_state=input_data, dimensionality=4)
+
+    for cycle in range(6):
+        pocket_dimension.run_cycle()
+
+    assert len(pocket_dimension.get_active_cells()) == 848
